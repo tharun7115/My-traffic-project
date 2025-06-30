@@ -1,0 +1,11 @@
+flask
+flask-sqlalchemy 
+flask-wtf 
+flask-bcrypt 
+flask-cors 
+python-dotenv 
+email-validator
+Flask-SQLAlchemy
+WTForms
+Axios
+bcrypt
