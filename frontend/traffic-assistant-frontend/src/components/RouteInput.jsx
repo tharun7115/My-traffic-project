@@ -28,9 +28,9 @@ const RouteInput = () => {
     }
   };
 
-  const handleReroute = () => {
-    navigate(`/reroute?source=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}`);
-  };
+ const handleReroute = () => {
+  navigate(`/reroute?source=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}`);
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
