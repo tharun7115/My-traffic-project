@@ -1,89 +1,97 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const RouteInput = () => {
+const RouteInputPage = () => {
   const [source, setSource] = useState('');
   const [destination, setDestination] = useState('');
-  const [trafficData, setTrafficData] = useState(null);
-  const [error, setError] = useState('');
+  const [prediction, setPrediction] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleGetPrediction = async () => {
     if (!source || !destination) {
-      setError("Please enter both source and destination");
+      setError("Please fill all fields.");
       return;
     }
+    
+    setLoading(true);
+    setError(null);
+    setPrediction(null);
 
     try {
-      const res = await axios.get(`http://localhost:5000/api/traffic`, {
-        params: { source, destination }
-      });
+      const trafficRes = await axios.post('http://127.0.0.1:5000/api/predict-traffic');
+      const causeRes = await axios.post('http://127.0.0.1:5000/api/classify-image');
 
-      setTrafficData(res.data);
-      setError('');
+      setPrediction({
+        condition: trafficRes.data.predicted_traffic_condition,
+        cause: causeRes.data.predicted_cause,
+        imageUrl: causeRes.data.image_url
+      });
     } catch (err) {
-      setError("Error fetching traffic info");
+      setError("Failed to get predictions. Please check the backend.");
+    } finally {
+      setLoading(false);
     }
   };
 
- const handleReroute = () => {
-  navigate(`/reroute?source=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}`);
-};
+  const handleShowMap = () => {
+    if (source && destination) {
+      // ✅ This path now correctly matches the path in App.jsx
+      navigate(`/reroute?source=${source}&destination=${destination}`);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-center">Enter Your Route</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold text-center text-gray-800">Traffic Prediction & Routing</h2>
+        
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Enter Source Location"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+          />
+          <input
+            type="text"
+            placeholder="Enter Destination Location"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+          />
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Source</label>
-            <input
-              type="text"
-              placeholder="E.g., Koramangala"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              className="w-full p-3 border rounded"
-              required
-            />
-          </div>
+        <button
+          onClick={handleGetPrediction}
+          disabled={loading}
+          className="w-full py-3 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+        >
+          {loading ? 'Analyzing...' : 'Get Traffic Analysis'}
+        </button>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Destination</label>
-            <input
-              type="text"
-              placeholder="E.g., Whitefield"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              className="w-full p-3 border rounded"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            Get Traffic Info
-          </button>
-        </form>
-
-        {error && <p className="mt-4 text-red-500">{error}</p>}
-
-        {/* Traffic Info */}
-        {trafficData && (
-          <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded">
-            <h3 className="font-semibold">Traffic Alert:</h3>
-            <p><strong>Cause:</strong> {trafficData.cause || 'Unknown'}</p>
-            <p><strong>Congestion Level:</strong> {trafficData.congestion_level || 'Unknown'}</p>
-
+        {error && <p className="text-center text-red-500">{error}</p>}
+        
+        {prediction && (
+          <div className="p-4 mt-4 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg">
+            <h3 className="text-lg font-bold text-gray-800">Live Traffic Analysis</h3>
+            <img src={prediction.imageUrl} alt={prediction.cause} className="w-full h-48 object-cover mt-2 rounded-lg" />
+            <p className="mt-2">
+              <span className="font-semibold">Predicted Traffic:</span> 
+              <span className="font-bold text-blue-700"> {prediction.condition}</span>
+            </p>
+            <p>
+              <span className="font-semibold">Identified Cause:</span> 
+              <span className="font-bold text-blue-700"> {prediction.cause}</span>
+            </p>
             <button
-              onClick={handleReroute}
-              className="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+              onClick={handleShowMap}
+              className="w-full py-2 mt-4 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
-              Reroute Map
+              Show Route on Map
             </button>
           </div>
         )}
@@ -92,4 +100,4 @@ const RouteInput = () => {
   );
 };
 
-export default RouteInput;
+export default RouteInputPage;

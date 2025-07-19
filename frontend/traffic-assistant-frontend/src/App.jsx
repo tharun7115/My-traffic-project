@@ -1,32 +1,31 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
+
+// Import components using your specified file names
+import HomePage from './components/Home';
+import LoginPage from './components/Login';
+import RegisterPage from './components/Register';
+import RouteInputPage from './components/RouteInput';
 import RerouteMapPage from './components/RerouteMapPage';
-import RouteInput from './components/RouteInput';
-import Home from './components/Home';
-import Login from './components/Login';
-import Register from './components/Register';
+import AdminLoginPage from './components/AdminLogin';
+// Assuming AdminDashboard component exists
+
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/route-input" element={<RouteInput />} />
-
-        {/* Wrap RerouteMapPage in ErrorBoundary */}
-        <Route
-          path="/reroute"
-          element={
-            <ErrorBoundary>
-              <RerouteMapPage />
-            </ErrorBoundary>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <Router>
+      <ErrorBoundary>
+        <Routes>
+          {/* Use the imported variable names in the 'element' prop */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/route-input" element={<RouteInputPage />} />
+          <Route path="/reroute" element={<RerouteMapPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+               </Routes>
+      </ErrorBoundary>
+    </Router>
   );
 }
 
