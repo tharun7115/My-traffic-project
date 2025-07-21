@@ -21,18 +21,16 @@ def predict_traffic():
         return jsonify({"error": "Model not loaded"}), 500
         
     now = datetime.now()
-    # ✅ FIX: Use the correct feature names and methods the model was trained on
     hour_of_day = now.hour
-    day_of_week = now.weekday() # Monday=0, Sunday=6, matches training data
+    day_of_week = now.weekday()
 
-    # Use the correct column names for the prediction
     input_data = pd.DataFrame([[hour_of_day, day_of_week]], columns=['Hour', 'Day_of_Week'])
-    
     predicted_volume = model.predict(input_data)[0]
 
-    if predicted_volume < 200:
+    # ✅ FIX: Adjust these numbers to change the prediction sensitivity
+    if predicted_volume < 400: # Was 200
         traffic_condition = "Light"
-    elif predicted_volume < 500:
+    elif predicted_volume < 700: # Was 500
         traffic_condition = "Moderate"
     else:
         traffic_condition = "Heavy"

@@ -1,6 +1,6 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask import Flask
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -12,8 +12,8 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
 
-    from routes.auth import auth_bp
-    app.register_blueprint(auth_bp)
+    # Import models here to ensure they are registered with SQLAlchemy
+    from models import User, SearchHistory
 
     with app.app_context():
         db.create_all()

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// ✅ 1. Import useNavigate
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
@@ -31,7 +30,7 @@ const RoutingMachine = ({ source, destination }) => {
       routeWhileDragging: true,
       show: true,
       lineOptions: {
-        styles: [{ color: 'blue', opacity: 0.8, weight: 6 }]
+        styles: [{ color: '#3B5998', opacity: 0.8, weight: 6 }] // Match theme color
       },
     }).addTo(map);
 
@@ -49,8 +48,6 @@ const RerouteMapPage = () => {
   const search = new URLSearchParams(location.search);
   const sourceText = search.get('source');
   const destinationText = search.get('destination');
-  
-  // ✅ 2. Initialize the navigate function
   const navigate = useNavigate();
 
   const [sourceCoords, setSourceCoords] = useState(null);
@@ -116,11 +113,11 @@ const RerouteMapPage = () => {
 
   return (
     <div style={{ height: '100vh', width: '100%' }}>
-      {/* ✅ 3. MODIFIED HEADER with Home Button */}
-      <div className="relative bg-blue-600 text-white p-4 text-center">
+      {/* Header with updated theme color */}
+      <div className="relative bg-[#3B5998] text-white p-4 text-center">
         <button
           onClick={() => navigate('/route-input')}
-          className="absolute top-1/2 left-4 -translate-y-1/2 bg-white text-blue-600 font-semibold py-1 px-3 rounded-md shadow-md hover:bg-gray-100 transition-colors"
+          className="absolute top-1/2 left-4 -translate-y-1/2 bg-white text-[#3B5998] font-semibold py-1 px-3 rounded-md shadow-md hover:bg-gray-100 transition-colors"
         >
           Home
         </button>
@@ -131,7 +128,7 @@ const RerouteMapPage = () => {
       <MapContainer 
         center={sourceCoords || [12.9716, 77.5946]}
         zoom={12} 
-        style={{ height: 'calc(100vh - 80px)', width: '100%' }}
+        style={{ height: 'calc(100vh - 72px)', width: '100%' }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

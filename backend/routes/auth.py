@@ -3,7 +3,7 @@ from models import User
 from database import db, bcrypt
 import logging
 
-# ✅ Define auth_bp at the top
+# Define auth_bp at the top
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
@@ -17,15 +17,12 @@ def register():
     if not username or not email or not password or password != confirm_password:
         return jsonify({"error": "Invalid input"}), 400
 
-    # Check if username already exists
     if User.query.filter_by(username=username).first():
         return jsonify({"error": "Username already taken"}), 400
 
-    # Check if email already exists
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already exists"}), 400
 
-    # Create new user
     user = User(username=username, email=email)
     user.set_password(password)
 
